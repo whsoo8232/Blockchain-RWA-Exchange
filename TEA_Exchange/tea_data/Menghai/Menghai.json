@@ -1,0 +1,31 @@
+{
+  "image": "https://956d334ec241ad80399eb1fcfc13d462.ipfscdn.io/ipfs/QmPoZpNzg29ZqVH3vyWbFf4AR8CAQcsAFYbhrxXmRDnTvc",
+  "name": "TestTea",
+  "description": "TestTea",
+  "attributes": [
+    {
+      "trait_type": "trait1",
+      "value": "test"
+    },
+    {
+      "trait_type": "trait1",
+      "value": "test"
+    },
+    {
+      "trait_type": "trait1",
+      "value": "test"
+    },
+    {
+      "trait_type": "trait1",
+      "value": "test"
+    },
+    {
+      "trait_type": "trait1",
+      "value": "test"
+    },
+    {
+      "trait_type": "trait1",
+      "value": "test"
+    }
+  ]
+}
