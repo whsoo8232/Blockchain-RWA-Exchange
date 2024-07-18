@@ -32,20 +32,13 @@ def get_contract(web3, contractAddress, contractAbi):
     return contract
 
 
-def mint(
-    web3,
-    teaContract,
-    minter,
-    minter_pk,
-    tokenId,
-    tokenURI
-):
+def mint(web3, contract, minter, minter_pk, tokenId, tokenURI):
     To_add = web3.to_checksum_address(minter)
     gas_price = web3.eth.gas_price
     nonce = web3.eth.get_transaction_count(To_add)
-    tx = teaContract.functions.mint(
-        To_add, tokenId, tokenURI
-    ).build_transaction({"from": To_add, "nonce": nonce, "gasPrice": gas_price})
+    tx = contract.functions.mint(To_add, tokenId, tokenURI).build_transaction(
+        {"from": To_add, "nonce": nonce, "gasPrice": gas_price}
+    )
     signed_txn = web3.eth.account.sign_transaction(tx, minter_pk)
     txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
     tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
@@ -54,21 +47,13 @@ def mint(
     return tx_receipt
 
 
-def multiMint(
-    web3,
-    teaContract,
-    minter,
-    minter_pk,
-    dests,
-    tokenIds,
-    tokenURIs
-):
+def multiMint(web3, contract, minter, minter_pk, dests, tokenIds, tokenURIs):
     To_add = web3.to_checksum_address(minter)
     gas_price = web3.eth.gas_price
     nonce = web3.eth.get_transaction_count(minter)
-    tx = teaContract.functions.multiMint(
-        dests, tokenIds, tokenURIs
-    ).build_transaction({"from": To_add, "nonce": nonce, "gasPrice": gas_price})
+    tx = contract.functions.multiMint(dests, tokenIds, tokenURIs).build_transaction(
+        {"from": To_add, "nonce": nonce, "gasPrice": gas_price}
+    )
     signed_txn = web3.eth.account.sign_transaction(tx, minter_pk)
     txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
     tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
@@ -77,18 +62,30 @@ def multiMint(
     return tx_receipt
 
 
-def burn(
-    web3,
-    teaContract,
-    to,
-    to_pk,
-    tokenId
-):
-    To_add = web3.to_checksum_address(to)
+def burn(web3, contract, To, To_pk, tokenId):
+    To_add = web3.to_checksum_address(To)
     gas_price = web3.eth.gas_price
     nonce = web3.eth.get_transaction_count(To_add)
-    tx = teaContract.functions.burn(tokenId).build_transaction({"from": To_add, "nonce": nonce, "gasPrice": gas_price})
-    signed_txn = web3.eth.account.sign_transaction(tx, to_pk)
+    tx = contract.functions.burn(tokenId).build_transaction(
+        {"from": To_add, "nonce": nonce, "gasPrice": gas_price}
+    )
+    signed_txn = web3.eth.account.sign_transaction(tx, To_pk)
+    txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
+    print(tx_receipt)
+
+    return tx_receipt
+
+
+def NFT_tranferFrom(web3, contract, From, From_pk, To, tokenId):
+    From_add = web3.to_checksum_address(From)
+    To_add = web3.to_checksum_address(To)
+    gas_price = web3.eth.gas_price
+    nonce = web3.eth.get_transaction_count(From_add)
+    tx = contract.functions.transferFrom(From_add, To_add, tokenId).build_transaction(
+        {"from": From_add, "nonce": nonce, "gasPrice": gas_price}
+    )
+    signed_txn = web3.eth.account.sign_transaction(tx, From_pk)
     txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
     tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
     print(tx_receipt)
@@ -108,14 +105,82 @@ if __name__ == "__main__":
     network = "amoy"
     web3 = connect_web3(network, INFURA_KEY)
 
-    Token_to_NFT_contract_address = ""
-
+    # NFT contract setup
     NFTs_contract_address = "0x12e030CCaB2cc841E4b66e89f46D433F8bF6FA8E"
+    NFTs_contract_abi = "./contracts/NFTs.abi"
+    NFTs_contract = get_contract(web3, NFTs_contract_address, NFTs_contract_abi)
+    # tradeNFT setup
+    tradeNFT_contract_address = "0xDdd3934832AFE79a7e5505fDD75298191CDd4E1A"
+    tradeNFT_contract_abi = "./contracts/tradeNFT.abi"
+    tradeNFT_contract = get_contract(
+        web3, tradeNFT_contract_address, tradeNFT_contract_abi
+    )
 
+    # checksum_addresses
+    NFT_buyer = web3.to_checksum_address(MY_TESTTEST)
+    NFT_owner = web3.to_checksum_address(MY_TESTMAIN)
+    tradeContract = web3.to_checksum_address(tradeNFT_contract_address)
 
-    ## transaction part
-    tokenURI = Cha_Dao_Sheng_Cha_uri
-    tokenId = 0
-    mint(web3, teaContract, MY_TESTMAIN, MY_TESTMAIN_PK, tokenId, tokenURI)
+    # # trade setup
+    # id = 1
+    # tokenId = 1
+    # tokenPrice = 0.1
+    # # Approve NFT to contract
+    # gas_price = web3.eth.gas_price
+    # nonce = web3.eth.get_transaction_count(NFT_owner)
+    # tx = NFTs_contract.functions.approve(tradeContract, tokenId).build_transaction(
+    #     {"from": NFT_owner, "nonce": nonce, "gasPrice": gas_price}
+    # )
+    # signed_txn = web3.eth.account.sign_transaction(tx, MY_TESTMAIN_PK)
+    # txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    # tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
+    # print(tx_receipt)
+    # # trade_NFT_with_ETH
+    # gas_price = web3.eth.gas_price
+    # nonce = web3.eth.get_transaction_count(NFT_buyer)
+    # tx = tradeNFT_contract.functions.trade_NFT_with_ETH(
+    #     id, tokenId, int(tokenPrice * 1e18)
+    # ).build_transaction(
+    #     {
+    #         "from": NFT_buyer,
+    #         "nonce": nonce,
+    #         "gasPrice": gas_price,
+    #         "value": int(tokenPrice * 1e18),
+    #     }
+    # )
+    # signed_txn = web3.eth.account.sign_transaction(tx, MY_TESTTEST_PK)
+    # txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    # tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
+    # print(tx_receipt)
 
-    
+    # trade setup
+    id = 1
+    tokenId = 1
+    tokenPrice = 100
+    # Approve NFT to contract
+    gas_price = web3.eth.gas_price
+    nonce = web3.eth.get_transaction_count(NFT_owner)
+    tx = NFTs_contract.functions.approve(tradeContract, tokenId).build_transaction(
+        {"from": NFT_owner, "nonce": nonce, "gasPrice": gas_price}
+    )
+    signed_txn = web3.eth.account.sign_transaction(tx, MY_TESTMAIN_PK)
+    txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
+    print(tx_receipt)
+    # trade_NFT_with_ETH
+    gas_price = web3.eth.gas_price
+    nonce = web3.eth.get_transaction_count(NFT_buyer)
+    tx = tradeNFT_contract.functions.trade_NFT_with_ETH(
+        id, tokenId, int(tokenPrice * 1e18)
+    ).build_transaction(
+        {
+            "from": NFT_buyer,
+            "nonce": nonce,
+            "gasPrice": gas_price,
+            "value": int(tokenPrice * 1e18),
+        }
+    )
+    signed_txn = web3.eth.account.sign_transaction(tx, MY_TESTTEST_PK)
+    txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
+    print(tx_receipt)

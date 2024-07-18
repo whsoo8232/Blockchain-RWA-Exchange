@@ -1,9 +1,9 @@
 const hardhat = require("hardhat");
 
 async function main() {
-    const NFTs = await hardhat.ethers.getContractFactory("NFTs");
+    const tradeNFT = await hardhat.ethers.getContractFactory("tradeNFT");
 
-    const contract = await NFTs.deploy();
+    const contract = await tradeNFT.deploy();
 
     console.log(contract.target)
 }

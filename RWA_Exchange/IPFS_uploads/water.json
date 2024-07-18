@@ -1,0 +1,15 @@
+{
+  "image": "https://956d334ec241ad80399eb1fcfc13d462.ipfscdn.io/ipfs/QmcutV7UvRNm9BnAsjUJe59uoe4GbTfqmoLj2F9vRRb7b4",
+  "name": "Water",
+  "description": "Water",
+  "attributes": [
+    {
+      "trait_type": "Alpha",
+      "value": "a"
+    },
+    {
+      "trait_type": "Beta",
+      "value": "b"
+    }
+  ]
+}
