@@ -18,7 +18,7 @@ contract tradeNFT is ReentrancyGuard, Ownable {
     address public _NFT_owner = 0x64a86158D40A628d626e6F6D4e707667048853eb;
 
     // token contracts distribute
-    address public _USDT = 0x777af890456cFcF93431D37E756ec06bf190e3a7;
+    address public _USDT = 0xc0adb3cA9c756D5C12d08CF5FD8168d088A9E46d;
 
 
     event Trade_NFT_With_ETH(uint id, address user, uint tokenId, uint NFT_price);

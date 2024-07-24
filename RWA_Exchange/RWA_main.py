@@ -109,12 +109,16 @@ if __name__ == "__main__":
     NFTs_contract_address = "0x12e030CCaB2cc841E4b66e89f46D433F8bF6FA8E"
     NFTs_contract_abi = "./contracts/NFTs.abi"
     NFTs_contract = get_contract(web3, NFTs_contract_address, NFTs_contract_abi)
-    # tradeNFT setup
-    tradeNFT_contract_address = "0xDdd3934832AFE79a7e5505fDD75298191CDd4E1A"
+    # tradeNFT contract setup
+    tradeNFT_contract_address = "0x96EE75129c7a76107ff204400aFbe71FC122cb00"
     tradeNFT_contract_abi = "./contracts/tradeNFT.abi"
     tradeNFT_contract = get_contract(
         web3, tradeNFT_contract_address, tradeNFT_contract_abi
     )
+    # USDT contract setup
+    USDT_contract_addr = "0xc0adb3cA9c756D5C12d08CF5FD8168d088A9E46d"
+    USDT_contract_abi = "./contracts/payToken.abi"
+    USDT_contract = get_contract(web3, USDT_contract_addr, USDT_contract_abi)
 
     # checksum_addresses
     NFT_buyer = web3.to_checksum_address(MY_TESTTEST)
@@ -154,8 +158,8 @@ if __name__ == "__main__":
     # print(tx_receipt)
 
     # trade setup
-    id = 1
-    tokenId = 1
+    id = 2
+    tokenId = 3
     tokenPrice = 100
     # Approve NFT to contract
     gas_price = web3.eth.gas_price
@@ -167,17 +171,26 @@ if __name__ == "__main__":
     txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
     tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
     print(tx_receipt)
-    # trade_NFT_with_ETH
+    # Approve msg.senders USDT to contract
     gas_price = web3.eth.gas_price
     nonce = web3.eth.get_transaction_count(NFT_buyer)
-    tx = tradeNFT_contract.functions.trade_NFT_with_ETH(
+    tx = USDT_contract.functions.approve(
+        tradeContract, int(tokenPrice * 1e18)
+    ).build_transaction({"from": NFT_buyer, "nonce": nonce, "gasPrice": gas_price})
+    signed_txn = web3.eth.account.sign_transaction(tx, MY_TESTTEST_PK)
+    txHash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    tx_receipt = web3.eth.wait_for_transaction_receipt(txHash)
+    print(tx_receipt)
+    # trade_NFT_with_USDT
+    gas_price = web3.eth.gas_price
+    nonce = web3.eth.get_transaction_count(NFT_buyer)
+    tx = tradeNFT_contract.functions.trade_NFT_with_USDT(
         id, tokenId, int(tokenPrice * 1e18)
     ).build_transaction(
         {
             "from": NFT_buyer,
             "nonce": nonce,
             "gasPrice": gas_price,
-            "value": int(tokenPrice * 1e18),
         }
     )
     signed_txn = web3.eth.account.sign_transaction(tx, MY_TESTTEST_PK)
